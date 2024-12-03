@@ -1,0 +1,1 @@
+ D:\\vemech1\\vemech\\.dart_tool\\flutter_build\\ef99996b76e1acfa83941e7fe31ead66\\native_assets.yaml: 

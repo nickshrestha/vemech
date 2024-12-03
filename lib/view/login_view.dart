@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/bloc/connection/connection_bloc.dart';
+import 'package:vemech/bloc/connection/connection_state.dart';
 import 'package:vemech/view/dashboard_view.dart';
 import 'package:vemech/view/registration_view.dart';
 
@@ -22,6 +25,41 @@ class _LoginViewState extends State<LoginView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               const SizedBox(height: 50),
+              BlocListener<NetworkBloc, NetworkState>(
+                listener: (context, state) {
+                  if (state is NetworkFailure) {
+                    // When no internet connection, show a snackbar or alert
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("No Internet Connection"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } else if (state is NetworkSuccess) {
+                    // When connected to the internet, you can trigger a page refresh
+                    // You can perform any action like reloading data or UI refresh
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("You're connected to the internet"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                },
+                child: BlocBuilder<NetworkBloc, NetworkState>(
+                  builder: (context, state) {
+                    // Here you can directly update the UI based on connection status
+                    if (state is NetworkFailure) {
+                      return const SizedBox.shrink();
+                    } else if (state is NetworkSuccess) {
+                      return const SizedBox.shrink();
+                    } else {
+                      return const SizedBox.shrink(); // Empty state
+                    }
+                  },
+                ),
+              ),
+
               // Text: Sign in to your account
               const Text(
                 'Sign in to your account',
@@ -64,10 +102,8 @@ class _LoginViewState extends State<LoginView> {
               // Sign in button
               ElevatedButton(
                 onPressed: () {
-                    Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>  DashboardView()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => DashboardView()));
                 },
                 style: ElevatedButton.styleFrom(
                   // primary: Colors.green, // Background color
