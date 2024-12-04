@@ -28,13 +28,15 @@ class ProfileView extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('Update Vehicle Info', style: TextStyle(fontSize: 18)),
+            title: const Text('Update Vehicle Info',
+                style: TextStyle(fontSize: 18)),
             onTap: () {
               // Handle account settings
             },
           ),
           ListTile(
-            title: const Text('Display Vehicle Info', style: TextStyle(fontSize: 18)),
+            title: const Text('Display Vehicle Info',
+                style: TextStyle(fontSize: 18)),
             onTap: () {
               // Handle account settings
             },
@@ -46,13 +48,15 @@ class ProfileView extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('Account Settings', style: TextStyle(fontSize: 18)),
+            title:
+                const Text('Account Settings', style: TextStyle(fontSize: 18)),
             onTap: () {
               // Handle account settings
             },
           ),
           ListTile(
-            title: const Text('Change password', style: TextStyle(fontSize: 18)),
+            title:
+                const Text('Change password', style: TextStyle(fontSize: 18)),
             onTap: () {
               // Handle logout
             },
@@ -61,7 +65,7 @@ class ProfileView extends StatelessWidget {
             title: const Text('Logout', style: TextStyle(fontSize: 18)),
             onTap: () {
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const LoginView()),
+                MaterialPageRoute(builder: (context) => LoginView()),
                 (Route<dynamic> route) => false,
               );
               // Handle logout
