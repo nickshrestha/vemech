@@ -51,6 +51,43 @@ class NetworkHelper {
     }
   }
 
+  Future<Response> postSignUp({
+    required String role,
+    required String email,
+    required String username,
+    required String firstName,
+    required String lastName,
+    required String password,
+    required String confirmPassword,
+    required String address,
+    required String phoneNo,
+    required String dob,
+  }) async {
+    try {
+      var body = {
+        "role": role,
+        "email": email,
+        "username": username,
+        "first_name": firstName,
+        "last_name": lastName,
+        "password": password,
+        "confirm_password": confirmPassword,
+        "address": address,
+        "phone_no": phoneNo,
+        "dob": dob,
+      };
+      Response response =
+          await client.post(parseUrl(BaseUrl.signup), body: body);
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during login: $e');
+    }
+  }
+
   static void observeNetwork() {
     Connectivity().onConnectivityChanged.listen((result) {
       if (result.contains(ConnectivityResult.none)) {

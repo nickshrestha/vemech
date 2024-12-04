@@ -7,5 +7,5 @@ class BaseUrl {
   }
 
   static final String login = getFullUrl("/accounts/login/");
-  static final String signup = getFullUrl("/endpoint");
+  static final String signup = getFullUrl("/accounts/register/");
 }

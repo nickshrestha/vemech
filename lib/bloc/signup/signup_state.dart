@@ -1,47 +1,46 @@
+part of 'signup_bloc.dart';
 
-// part of 'signup_bloc.dart';
+abstract class SignupState {
+  const SignupState();
 
-// abstract class AuthenticationState {
-//   const AuthenticationState();
+  List<Object> get props => [];
+}
 
-//   List<Object> get props => [];
-// }
+class SignupInitialState extends SignupState {}
 
-// class AuthenticationInitialState extends AuthenticationState {}
+class SignupLoadingState extends SignupState {
+  final bool isLoading;
 
-// class AuthenticationLoadingState extends AuthenticationState {
-//   final bool isLoading;
+  SignupLoadingState({required this.isLoading});
+}
 
-//   AuthenticationLoadingState({required this.isLoading});
-// }
+class SignupSuccessState extends SignupState {
+  final String message;
 
-// class AuthenticationSuccessState extends AuthenticationState {
-//   final LoginModel user;
+  const SignupSuccessState(this.message);
 
-//   const AuthenticationSuccessState(this.user);
+  @override
+  List<Object> get props => [message];
+}
 
-//   @override
-//   List<Object> get props => [user];
-// }
+class SignupFailureState extends SignupState {
+  final String errorMessage;
 
-// class AuthenticationFailureState extends AuthenticationState {
-//   final String errorMessage;
+  const SignupFailureState(this.errorMessage);
 
-//   const AuthenticationFailureState(this.errorMessage);
+  @override
+  List<Object> get props => [errorMessage];
+}
 
-//   @override
-//   List<Object> get props => [errorMessage];
-// }
+class SignupValidationFailureState extends SignupState {
+  final String? emailError;
+  final String? passwordError;
 
-// class AuthenticationValidationFailureState extends AuthenticationState {
-//   final String? emailError;
-//   final String? passwordError;
+  const SignupValidationFailureState({
+    this.emailError,
+    this.passwordError,
+  });
 
-//   const AuthenticationValidationFailureState({
-//     this.emailError,
-//     this.passwordError,
-//   });
-
-//   @override
-//   List<Object> get props => [emailError ?? '', passwordError ?? ''];
-// }
+  @override
+  List<Object> get props => [emailError ?? '', passwordError ?? ''];
+}

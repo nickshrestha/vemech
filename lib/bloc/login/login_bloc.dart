@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vemech/models/login_model.dart';
 import 'package:vemech/network%20helper/network_helper.dart';
+import 'package:vemech/widgets/validation.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -14,8 +15,8 @@ class AuthenticationBloc
     // Handle the SignUpUser event
     on<SignUpUser>((event, emit) async {
       // Validate email and password
-      if (_validateUser(event.email) == null &&
-          _validatePassword(event.password) == null) {
+      if (Validation().validateUser(event.email) == null &&
+          Validation().validatePassword(event.password) == null) {
         // Emit loading state
         emit(AuthenticationLoadingState(isLoading: true));
 
@@ -45,39 +46,10 @@ class AuthenticationBloc
       } else {
         // If validation fails, emit the validation error states
         emit(AuthenticationValidationFailureState(
-          emailError: _validateUser(event.email),
-          passwordError: _validatePassword(event.password),
+          emailError: Validation().validateUser(event.email),
+          passwordError: Validation().validatePassword(event.password),
         ));
       }
     });
-  }
-
-  // Helper method for validating the email
-  String? _validateUser(String email) {
-    if (email.isEmpty) {
-      return 'Please enter your Username';
-    }
-    return null;
-  }
-
-  // Helper method for validating the email
-  String? _validateEmail(String email) {
-    if (email.isEmpty) {
-      return 'Please enter your email';
-    } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-        .hasMatch(email)) {
-      return 'Please enter a valid email';
-    }
-    return null;
-  }
-
-  // Helper method for validating the password
-  String? _validatePassword(String password) {
-    if (password.isEmpty) {
-      return 'Please enter your password';
-    } else if (password.length < 5) {
-      return 'Password must be at least 6 characters';
-    }
-    return null;
   }
 }

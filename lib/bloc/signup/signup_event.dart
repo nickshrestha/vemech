@@ -1,20 +1,33 @@
-// part of 'signup_bloc.dart';
+part of 'signup_bloc.dart';
 
+abstract class SignupEvent {
+  const SignupEvent();
 
+  List<Object> get props => [];
+}
 
-// abstract class SignupEvent {
-//   const SignupEvent();
+class SignUpUser extends SignupEvent {
+  final String email;
+  final String password;
+  final String role;
+  final String firstName;
+  final String lastName;
+  final String confirmPassword;
+  final String address;
+  final String phoneNo;
+  final String dob;
 
-//   List<Object> get props => [];
+  const SignUpUser(
+      {required this.email,
+      required this.password,
+      required this.role,
+      required this.firstName,
+      required this.lastName,
+      required this.confirmPassword,
+      required this.address,
+      required this.phoneNo,
+      required this.dob});
 
-// }
-
-// class SignUpUser extends SignupEvent {
-//   final String email;
-//   final String password;
-
-//   const SignUpUser(this.email, this.password);
-
-//   @override
-//   List<Object> get props => [email, password];
-// }
+  @override
+  List<Object> get props => [email, password];
+}

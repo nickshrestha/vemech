@@ -143,13 +143,11 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         );
                       } else if (state is AuthenticationFailureState) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              content: Text('${state.errorMessage}'),
-                            );
-                          },
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.errorMessage),
+                            backgroundColor: Colors.red,
+                          ),
                         );
                       } else if (state
                           is AuthenticationValidationFailureState) {
@@ -191,12 +189,6 @@ class _LoginViewState extends State<LoginView> {
                             } else {
                               print("not validated");
                             }
-                            BlocProvider.of<AuthenticationBloc>(context).add(
-                              SignUpUser(
-                                emailController.text,
-                                passwordController.text,
-                              ),
-                            );
                           },
                           child: Text(
                             state is AuthenticationLoadingState &&

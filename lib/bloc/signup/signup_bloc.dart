@@ -1,82 +1,63 @@
-// import 'dart:convert';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:vemech/models/login_model.dart';
-// import 'package:vemech/network%20helper/network_helper.dart';
+import 'dart:convert';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/models/login_model.dart';
+import 'package:vemech/network%20helper/network_helper.dart';
+import 'package:vemech/widgets/validation.dart';
 
+part 'signup_event.dart';
+part 'signup_state.dart';
 
+class SignupBloc extends Bloc<SignupEvent, SignupState> {
+  final NetworkHelper authService = NetworkHelper();
 
-// class AuthenticationBloc
-//     extends Bloc<AuthenticationEvent, AuthenticationState> {
-//   final NetworkHelper authService = NetworkHelper();
+  SignupBloc() : super(SignupInitialState()) {
+    // Handle the SignUpUser event
+    on<SignUpUser>((event, emit) async {
+      // Validate email and password
+      if (Validation().validateUser(event.email) == null) {
+        // Emit loading state
+        emit(SignupLoadingState(isLoading: true));
 
-//   AuthenticationBloc() : super(AuthenticationInitialState()) {
-//     // Handle the SignUpUser event
-//     on<SignUpUser>((event, emit) async {
-//       // Validate email and password
-//       if (_validateUser(event.email) == null &&
-//           _validatePassword(event.password) == null) {
-//         // Emit loading state
-//         emit(AuthenticationLoadingState(isLoading: true));
+        try {
+          // API call for login
+          var user = await authService.postSignUp(
+            username: event.email,
+            password: event.password,
+            role: event.role,
+            email: event.email,
+            firstName: event.firstName,
+            lastName: event.lastName,
+            confirmPassword: event.confirmPassword,
+            address: event.address,
+            phoneNo: event.phoneNo,
+            dob: event.dob,
+          );
 
-//         try {
-//           // API call for login
-//           var user = await authService.postLogin(
-//             username: event.email,
-//             password: event.password,
-//           );
+          // Check if the response is successful
+          if (user.statusCode == 201) {
+            // On successful login, emit the success state
+            String message = '${jsonDecode(user.body)['data']}';
+            emit(SignupSuccessState(message));
+          } else {
+            // If the response contains an error, emit the failure state
+            String errorMessage =
+                '${jsonDecode(user.body)['non_field_errors'][0]}';
+            emit(SignupFailureState(errorMessage));
+          }
+        } catch (e) {
+          // Handle any exceptions
+          emit(SignupFailureState('An unexpected error occurred.'));
+        }
 
-//           // Check if the response is successful
-//           if (user.statusCode == 200) {
-//             // On successful login, emit the success state
-//             emit(AuthenticationSuccessState(LoginModel.fromJson(user.body)));
-//           } else {
-//             // If the response contains an error, emit the failure state
-//             String errorMessage = '${jsonDecode(user.body)['error']}';
-//             emit(AuthenticationFailureState(errorMessage));
-//           }
-//         } catch (e) {
-//           // Handle any exceptions
-//           emit(AuthenticationFailureState('An unexpected error occurred.'));
-//         }
-
-//         // Emit loading state as false after the process completes (success or failure)
-//         emit(AuthenticationLoadingState(isLoading: false));
-//       } else {
-//         // If validation fails, emit the validation error states
-//         emit(AuthenticationValidationFailureState(
-//           emailError: _validateUser(event.email),
-//           passwordError: _validatePassword(event.password),
-//         ));
-//       }
-//     });
-//   }
-
-//   // Helper method for validating the email
-//   String? _validateUser(String email) {
-//     if (email.isEmpty) {
-//       return 'Please enter your Username';
-//     }
-//     return null;
-//   }
-
-//   // Helper method for validating the email
-//   String? _validateEmail(String email) {
-//     if (email.isEmpty) {
-//       return 'Please enter your email';
-//     } else if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-//         .hasMatch(email)) {
-//       return 'Please enter a valid email';
-//     }
-//     return null;
-//   }
-
-//   // Helper method for validating the password
-//   String? _validatePassword(String password) {
-//     if (password.isEmpty) {
-//       return 'Please enter your password';
-//     } else if (password.length < 5) {
-//       return 'Password must be at least 6 characters';
-//     }
-//     return null;
-//   }
-// }
+        // Emit loading state as false after the process completes (success or failure)
+        emit(SignupLoadingState(isLoading: false));
+      } else {
+        // If validation fails, emit the validation error states
+        emit(SignupValidationFailureState(
+          emailError: Validation().validateUser(event.email),
+          passwordError: Validation().validatePassword(event.password),
+        ));
+      }
+    });
+  }
+}
