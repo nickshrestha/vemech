@@ -43,6 +43,7 @@ dependencies:
   http: ^1.2.2
   pretty_http_logger: ^1.0.4
   connectivity_plus: ^6.1.0
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:

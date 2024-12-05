@@ -23,6 +23,12 @@ class _LoginViewState extends State<LoginView> {
     passwordController.dispose();
     super.dispose();
   }
+  @override
+  void initState() {
+    emailController.text = "nikhil1";
+    passwordController.text = "admin@123";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

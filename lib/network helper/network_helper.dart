@@ -1,18 +1,39 @@
 import 'dart:convert';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:pretty_http_logger/pretty_http_logger.dart';
 import 'package:vemech/bloc/connection/connection_bloc.dart';
 import 'package:vemech/bloc/connection/connection_evert.dart';
 import 'package:vemech/models/login_model.dart';
 import 'package:vemech/network%20helper/base_url.dart';
+import 'package:vemech/widgets/prefrences_helper.dart';
 
 class NetworkHelper {
   final HttpWithMiddleware client = HttpWithMiddleware.build(middlewares: [
     HttpLogger(logLevel: LogLevel.HEADERS),
     HttpLogger(logLevel: LogLevel.BODY),
   ]);
+
+  String? _token;  // Store the token in a private variable\
+  var _header;
+  TokenManager tokenManager = TokenManager();
+  
+
+  // Constructor to initialize the token
+  NetworkHelper() {
+    _initializeToken();
+  }
+
+  // Function to initialize the token by fetching it from SharedPreferences
+  Future<void> _initializeToken() async {
+    _token = await tokenManager.getToken();
+       _header = {
+        'Authorization': 'Token $_token',  // Use the stored token here
+      };
+  }
+
+  // Method to retrieve the token
+  String? get token => _token;
 
   parseUrl(String url) {
     try {
@@ -23,7 +44,7 @@ class NetworkHelper {
     }
   }
 
-  // Example
+  // Example: GET request
   Future<String> getData() async {
     try {
       var response = await client.get(parseUrl("BaseUrl.login"));
@@ -33,25 +54,50 @@ class NetworkHelper {
     }
   }
 
-  Future<Response> postLogin(
+  // POST login request with username and password
+  Future<http.Response> postLogin(
       {required String username, required String password}) async {
     try {
-      Response response = await client.post(parseUrl(BaseUrl.login),
+      http.Response response = await client.post(parseUrl(BaseUrl.login),
           body: {"username": username, "password": password});
       if (response.statusCode == 200) {
-        // var jsonMap = json.decode(response.body);
         return response;
       } else {
         return response;
-        // Handle other status codes as needed (e.g., 401, 404)
-        // throw Exception('Failed to login: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('An error occurred during login: $e');
     }
   }
 
-  Future<Response> postSignUp({
+  // POST logout request, using the token stored in the class
+  Future<http.Response> postLogout() async {
+    try {
+      // Check if the token is available
+      
+
+      // Create headers with the Authorization Bearer token
+    
+
+      // Make the API call with the token in the headers
+      http.Response response = await client.post(
+        parseUrl(BaseUrl.logout),
+        headers: _header,
+      );
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during logout: $e');
+    }
+  }
+
+  // POST SignUp request
+  Future<http.Response> postSignUp({
     required String role,
     required String email,
     required String username,
@@ -76,7 +122,7 @@ class NetworkHelper {
         "phone_no": phoneNo,
         "dob": dob,
       };
-      Response response =
+      http.Response response =
           await client.post(parseUrl(BaseUrl.signup), body: body);
       if (response.statusCode == 200) {
         return response;
@@ -84,10 +130,31 @@ class NetworkHelper {
         return response;
       }
     } catch (e) {
-      throw Exception('An error occurred during login: $e');
+      throw Exception('An error occurred during signup: $e');
     }
   }
 
+
+   Future<http.Response> getProfile() async {
+    try {
+  
+      http.Response response = await client.get(
+        parseUrl(BaseUrl.userprofile),
+        headers: _header,
+      );
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during logout: $e');
+    }
+  }
+
+  // Observe network connectivity
   static void observeNetwork() {
     Connectivity().onConnectivityChanged.listen((result) {
       if (result.contains(ConnectivityResult.none)) {

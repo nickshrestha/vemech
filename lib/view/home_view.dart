@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:vemech/widgets/prefrences_helper.dart';
 
 // HomePageView displays a carousel, categories, nearby workshops, and an action button.
 class HomePageView extends StatelessWidget {
@@ -13,6 +14,7 @@ class HomePageView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
+          // Text(SharedPreferencesHelper.getToken().toString()),
           // Carousel Slider for displaying images in a slideshow.
           CarouselSlider(
             options: CarouselOptions(

@@ -44,3 +44,5 @@ class AuthenticationValidationFailureState extends AuthenticationState {
   @override
   List<Object> get props => [emailError ?? '', passwordError ?? ''];
 }
+
+class AuthenticationLoggedOutState extends AuthenticationState {}

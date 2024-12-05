@@ -49,5 +49,7 @@
 <string>Need location access to show on map</string>
 <key>NSLocationAlwaysUsageDescription</key>
 <string>Need location access to show on map</string>
+<key>NSFaceIDUsageDescription</key>
+<string>We need Face ID or Touch ID to authenticate you</string>
 </dict>
 </plist>

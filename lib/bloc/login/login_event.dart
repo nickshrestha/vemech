@@ -20,4 +20,4 @@ class SignUpUser extends AuthenticationEvent {
 }
 
 
-class SignOut extends AuthenticationEvent {}
+class LogOutUser extends AuthenticationEvent {}

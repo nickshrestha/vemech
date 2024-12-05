@@ -3,15 +3,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vemech/bloc/connection/connection_bloc.dart';
 import 'package:vemech/bloc/connection/connection_evert.dart';
 import 'package:vemech/bloc/login/login_bloc.dart';
+import 'package:vemech/bloc/profile/profile_bloc.dart';
 import 'package:vemech/bloc/signup/signup_bloc.dart';
 import 'package:vemech/view/login_view.dart';
+import 'package:vemech/view/dashboard_view.dart';
+import 'package:vemech/widgets/prefrences_helper.dart';  // Assuming you have a DashboardView
 
-void main() {
-  runApp(const MyApp());
+
+void main() async {
+  // Ensure that Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  TokenManager tokenManager = TokenManager();
+  String? token = await tokenManager.getToken();
+
+  runApp(MyApp(token: token));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? token;
+
+  const MyApp({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +37,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<SignupBloc>(
           create: (context) => SignupBloc(),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (context) => ProfileBloc(),
         ),
         // Add other providers here as needed
       ],
@@ -44,12 +59,11 @@ class MyApp extends StatelessWidget {
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
               backgroundColor: WidgetStateProperty.resolveWith((context) {
-                // Return green for all states
                 return Colors.green;
               }),
               shape: WidgetStateProperty.resolveWith((context) {
                 return RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0), // Adjust radius
+                  borderRadius: BorderRadius.circular(8.0),
                 );
               }),
               foregroundColor: WidgetStateProperty.resolveWith((context) {
@@ -59,7 +73,7 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: LoginView(), // Starting point of the app
+        home: token != null ? DashboardView() : LoginView(),
       ),
     );
   }
