@@ -14,10 +14,9 @@ class NetworkHelper {
     HttpLogger(logLevel: LogLevel.BODY),
   ]);
 
-  String? _token;  // Store the token in a private variable\
+  String? _token; // Store the token in a private variable\
   var _header;
   TokenManager tokenManager = TokenManager();
-  
 
   // Constructor to initialize the token
   NetworkHelper() {
@@ -27,9 +26,11 @@ class NetworkHelper {
   // Function to initialize the token by fetching it from SharedPreferences
   Future<void> _initializeToken() async {
     _token = await tokenManager.getToken();
-       _header = {
-        'Authorization': 'Token $_token',  // Use the stored token here
-      };
+    _header = await {
+      'Authentication': 'Token $_token', // Use the stored token here
+    };
+    print("this is token $_token");
+    print("this is header $_header");
   }
 
   // Method to retrieve the token
@@ -73,17 +74,36 @@ class NetworkHelper {
   // POST logout request, using the token stored in the class
   Future<http.Response> postLogout() async {
     try {
-      // Check if the token is available
-      
-
-      // Create headers with the Authorization Bearer token
-    
-
-      // Make the API call with the token in the headers
       http.Response response = await client.post(
         parseUrl(BaseUrl.logout),
         headers: _header,
       );
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during logout: $e');
+    }
+  }
+
+  Future<http.Response> postChangePassword(
+      {required currentPassword,
+      required newPassword,
+      required confirmPassword}) async {
+    try {
+      var bodyResponse = {
+        "current_password": currentPassword,
+        "new_password": newPassword,
+        "confirm_password": confirmPassword
+      };
+      http.Response response = await client.post(
+          parseUrl(BaseUrl.changePassword),
+          headers: _header,
+          body: bodyResponse);
 
       // Check the response status
       if (response.statusCode == 200) {
@@ -134,10 +154,8 @@ class NetworkHelper {
     }
   }
 
-
-   Future<http.Response> getProfile() async {
+  Future<http.Response> getProfile() async {
     try {
-  
       http.Response response = await client.get(
         parseUrl(BaseUrl.userprofile),
         headers: _header,

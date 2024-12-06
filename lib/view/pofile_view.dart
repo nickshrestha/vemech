@@ -42,7 +42,7 @@ class _ProfileViewState extends State<ProfileView> {
         return Center(
           child: Text(
             state.errorMessage,
-            style: TextStyle(color: Colors.red),
+            style: const TextStyle(color: Colors.red),
           ), // Show an error message if fetching profile fails
         );
             } else 
@@ -59,8 +59,8 @@ class _ProfileViewState extends State<ProfileView> {
             //   backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Placeholder image
             // ),
             const SizedBox(height: 20),
-            Text(profile.profileData.user.username, style: TextStyle(fontSize: 20)),
-            Text("${profile.profileData.user.firstName} ${profile.profileData.user.lastName}", style: TextStyle(fontSize: 20)),
+            Text(profile.profileData.user.username, style: const TextStyle(fontSize: 20)),
+            Text("${profile.profileData.user.firstName} ${profile.profileData.user.lastName}", style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 10),
             Text('Email: ${profile.profileData.user.email}'),
             const SizedBox(height: 10),
@@ -125,7 +125,7 @@ class _ProfileViewState extends State<ProfileView> {
                   print("User logged out, navigating to LoginView.");
                   Navigator.of(context).pop();
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => LoginView()),
+                    MaterialPageRoute(builder: (context) => const LoginView()),
                     (Route<dynamic> route) => false, // Remove all routes
                   );
                 }

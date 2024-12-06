@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/bloc/biometric/biomatric_bloc.dart';
 import 'package:vemech/bloc/connection/connection_bloc.dart';
 import 'package:vemech/bloc/connection/connection_state.dart';
 import 'package:vemech/bloc/login/login_bloc.dart';
@@ -7,7 +8,7 @@ import 'package:vemech/view/dashboard_view.dart';
 import 'package:vemech/view/registration_view.dart';
 
 class LoginView extends StatefulWidget {
-  LoginView({super.key});
+  const LoginView({super.key});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -17,12 +18,16 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool isSelected = false;
+
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
+
   @override
   void initState() {
     emailController.text = "nikhil1";
@@ -138,75 +143,122 @@ class _LoginViewState extends State<LoginView> {
                     },
                   ),
                   const SizedBox(height: 30),
-
-                  BlocConsumer<AuthenticationBloc, AuthenticationState>(
-                    listener: (context, state) {
-                      if (state is AuthenticationSuccessState) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DashboardView(),
-                          ),
-                        );
-                      } else if (state is AuthenticationFailureState) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(state.errorMessage),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      } else if (state
-                          is AuthenticationValidationFailureState) {
-                        // Show validation error messages from Bloc
-                        if (state.emailError != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.emailError!),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                        if (state.passwordError != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.passwordError!),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      }
-                    },
-                    builder: (context, state) {
-                      return SizedBox(
-                        height: 50,
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            print("this is papped");
-                            if (_formKey.currentState!.validate()) {
-                              print("validated");
-                              // Only trigger the authentication if the form is valid
-                              BlocProvider.of<AuthenticationBloc>(context).add(
-                                SignUpUser(
-                                  emailController.text,
-                                  passwordController.text,
-                                ),
-                              );
-                            } else {
-                              print("not validated");
-                            }
-                          },
-                          child: Text(
-                            state is AuthenticationLoadingState &&
-                                    state.isLoading
-                                ? '.......'
-                                : 'Sign Up',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                      );
-                    },
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: isSelected,
+                        onChanged: (value) {
+                          setState(() {
+                            isSelected = value!;
+                          });
+                        },
+                      ),
+                      const Text("Use Biomatric for Login next time.")
+                    ],
                   ),
+
+                 Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Adjust the alignment of buttons
+  children: [
+    // Sign Up Button
+    BlocConsumer<AuthenticationBloc, AuthenticationState>(
+      listener: (context, state) {
+        if (state is AuthenticationSuccessState) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DashboardView(),
+            ),
+          );
+        } else if (state is AuthenticationFailureState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage),
+              backgroundColor: Colors.red,
+            ),
+          );
+        } else if (state is AuthenticationValidationFailureState) {
+          // Show validation error messages from Bloc
+          if (state.emailError != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.emailError!),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          if (state.passwordError != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.passwordError!),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      },
+      builder: (context, state) {
+        return Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                // Trigger authentication only if the form is valid
+                BlocProvider.of<AuthenticationBloc>(context).add(
+                  SignUpUser(
+                    emailController.text,
+                    passwordController.text,
+                    isSelected,
+                  ),
+                );
+              }
+            },
+            child: Text(
+              state is AuthenticationLoadingState && state.isLoading
+                  ? '.......'
+                  : 'Sign Up',
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
+        );
+      },
+    ),
+    
+    const SizedBox(width: 20), // Add some space between buttons
+    
+    // Biometrics Button (Fingerprint)
+    BlocConsumer<BiomatricBloc, BiomatricState>(
+      listener: (context, state) {
+        print("this is state $state");
+        if (state is BiomatricSuccessState) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const DashboardView(),
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        print("this is state $state");
+        if (state is BiomatricSuccessState) {
+          return ElevatedButton(
+            onPressed: () {
+              // Trigger biometrics authentication when the fingerprint button is pressed
+              BlocProvider.of<BiomatricBloc>(context)
+                  .add(const BiomatricLogin("asbskjb"));
+            },
+            child: const Icon(Icons.fingerprint_rounded),
+          );
+        } else if (state is BiomatricFailureState) {
+          return const SizedBox();
+        } else {
+          return const SizedBox();
+        }
+      },
+    ),
+  ],
+),
+
                   const SizedBox(height: 20),
                   // Forgot Password link
                   TextButton(
@@ -233,7 +285,8 @@ class _LoginViewState extends State<LoginView> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RegistrationForm()));
+                                  builder: (context) =>
+                                      const RegistrationForm()));
                         },
                         child: const Text(
                           'SIGN UP',

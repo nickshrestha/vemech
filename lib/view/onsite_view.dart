@@ -13,7 +13,7 @@ class OnSite extends StatefulWidget {
 
 class _OnSiteState extends State<OnSite> {
   final Completer<GoogleMapController> _controller = Completer();
-  Set<Marker> _markers = {};
+  final Set<Marker> _markers = {};
   List<MapType> mapTypes = [
     MapType.normal,
     MapType.satellite,
@@ -40,7 +40,7 @@ class _OnSiteState extends State<OnSite> {
         myLocationButtonEnabled: true,
 
         mapType: mapTypes[currentMapTypeIndex],
-        initialCameraPosition: CameraPosition(
+        initialCameraPosition: const CameraPosition(
             target: LatLng(0, 0), // Initial position
             zoom: 0 // Initial zoom level
             ),
@@ -62,14 +62,14 @@ class _OnSiteState extends State<OnSite> {
       // direction: SpeedDialDirection.down,
       children: [
         SpeedDialChild(
-            child: Icon(Icons.layers),
+            child: const Icon(Icons.layers),
             label: 'Change Map Type',
             onTap: _changeMapType),
         SpeedDialChild(
-            child: Icon(Icons.location_pin),
+            child: const Icon(Icons.location_pin),
             label: 'Go to Location',
             onTap: () => _goToPredefinedLocation(
-                LatLng(27.67393396237352, 85.36994562711988))),
+                const LatLng(27.67393396237352, 85.36994562711988))),
       ],
     );
   }
@@ -79,9 +79,9 @@ class _OnSiteState extends State<OnSite> {
     var position = await _determinePosition();
     setState(() {
       _markers.add(Marker(
-        markerId: MarkerId("currentLocation"),
+        markerId: const MarkerId("currentLocation"),
         position: LatLng(position.latitude, position.longitude),
-        infoWindow: InfoWindow(title: "Current Location"),
+        infoWindow: const InfoWindow(title: "Current Location"),
       ));
     });
     controller.animateCamera(CameraUpdate.newCameraPosition(
@@ -93,12 +93,12 @@ class _OnSiteState extends State<OnSite> {
   Future<void> _goToPredefinedLocation(LatLng location) async {
     final GoogleMapController controller = await _controller.future;
     setState(() {
-      _markers.removeWhere((m) => m.markerId == MarkerId("destination"));
+      _markers.removeWhere((m) => m.markerId == const MarkerId("destination"));
       _markers.add(Marker(
-        markerId: MarkerId("destination"),
+        markerId: const MarkerId("destination"),
         position: location,
         infoWindow:
-            InfoWindow(title: "Destination", snippet: "Predefined Location"),
+            const InfoWindow(title: "Destination", snippet: "Predefined Location"),
       ));
     });
     controller.animateCamera(CameraUpdate.newCameraPosition(

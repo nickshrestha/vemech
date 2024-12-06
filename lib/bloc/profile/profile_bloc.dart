@@ -20,10 +20,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           if (user.statusCode == 200) {
             emit(ProfileLoadingState(isLoading: false));
             var profileModel = ProfileModel.fromJson(user.body);
-            print("this is the data $profileModel");
             emit(ProfileSucccessState(profileModel));
           } else {
-            print("this is error ");
             emit(ProfileLoadingState(isLoading: false));
             // If the response contains an error, emit the failure state
             String errorMessage = '${jsonDecode(user.body)['detail']}';
@@ -33,7 +31,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         } catch (e) {
           // Handle any exceptions
           emit(ProfileLoadingState(isLoading: false));
-          emit(ProfileFailureState('An unexpected error occurred.'));
+          emit(const ProfileFailureState('An unexpected error occurred.'));
         }
       },
     );

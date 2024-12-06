@@ -18,8 +18,6 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
   }
 
   void _notifyStatus(NetworkNotify event, emit) {
-    print("this is value ${event.isConnected} ${emit} ");
     event.isConnected ? emit(NetworkSuccess()) : emit(NetworkFailure());
-    print(event.isConnected ? "connected" : "not connected");
   }
 }

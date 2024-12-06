@@ -4,6 +4,8 @@ import 'package:vemech/bloc/signup/signup_bloc.dart';
 import 'package:vemech/view/login_view.dart';
 
 class RegistrationForm extends StatefulWidget {
+  const RegistrationForm({super.key});
+
   @override
   _RegistrationFormState createState() => _RegistrationFormState();
 }
@@ -315,9 +317,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        print("this is papped");
                         if (_formKey.currentState!.validate()) {
-                          print("validated");
                           // Only trigger the Signup if the form is valid
                           BlocProvider.of<SignupBloc>(context).add(
                             SignUpUser(
@@ -334,14 +334,13 @@ class _RegistrationFormState extends State<RegistrationForm> {
                             ),
                           );
                         } else {
-                          print("not validated");
                         }
                       },
                       child: Text(
                         state is SignupLoadingState && state.isLoading
                             ? '.......'
                             : 'Sign Up',
-                        style: TextStyle(fontSize: 20),
+                        style: const TextStyle(fontSize: 20),
                       ),
                     ),
                   );
@@ -354,7 +353,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginView()),
+                      MaterialPageRoute(builder: (context) => const LoginView()),
                       (route) => false, // This removes all previous routes
                     );
                     // Handle navigation to login

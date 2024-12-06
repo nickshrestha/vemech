@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/bloc/biometric/biomatric_bloc.dart';
 import 'package:vemech/bloc/connection/connection_bloc.dart';
 import 'package:vemech/bloc/connection/connection_evert.dart';
 import 'package:vemech/bloc/login/login_bloc.dart';
@@ -7,8 +8,7 @@ import 'package:vemech/bloc/profile/profile_bloc.dart';
 import 'package:vemech/bloc/signup/signup_bloc.dart';
 import 'package:vemech/view/login_view.dart';
 import 'package:vemech/view/dashboard_view.dart';
-import 'package:vemech/widgets/prefrences_helper.dart';  // Assuming you have a DashboardView
-
+import 'package:vemech/widgets/prefrences_helper.dart'; // Assuming you have a DashboardView
 
 void main() async {
   // Ensure that Flutter bindings are initialized
@@ -41,6 +41,11 @@ class MyApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(
           create: (context) => ProfileBloc(),
         ),
+        BlocProvider<BiomatricBloc>(
+            create: (context) => BiomatricBloc()
+              ..add(
+                BiomatricAccess(),
+              )),
         // Add other providers here as needed
       ],
       child: MaterialApp(
@@ -73,7 +78,7 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: token != null ? DashboardView() : LoginView(),
+        home: token != null ? const DashboardView() : const LoginView(),
       ),
     );
   }

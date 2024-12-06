@@ -45,4 +45,30 @@ class AuthenticationValidationFailureState extends AuthenticationState {
   List<Object> get props => [emailError ?? '', passwordError ?? ''];
 }
 
+class ChangePasswordIsLoading extends AuthenticationState{
+  final bool isloading;
+  const ChangePasswordIsLoading({required this.isloading});
+  @override
+  List<Object> get props => [isloading];
+
+}
+
+class ChangePasswordSuccess extends AuthenticationState {
+  final String message ;
+
+  const ChangePasswordSuccess({required this.message});
+  @override 
+  List<Object> get props => [message];
+  
+}
+
+class ChangePasswordFaliure extends AuthenticationState {
+  final String errorMessage ;
+
+  const ChangePasswordFaliure({required this.errorMessage});
+  @override 
+  List<Object> get props => [errorMessage];
+  
+}
+
 class AuthenticationLoggedOutState extends AuthenticationState {}
