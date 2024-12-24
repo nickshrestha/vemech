@@ -33,3 +33,4 @@ class ProfileFailureState extends ProfileState {
   @override
   List<Object> get props => [errorMessage];
 }
+

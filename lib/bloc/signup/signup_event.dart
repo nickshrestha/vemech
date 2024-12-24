@@ -8,6 +8,7 @@ abstract class SignupEvent {
 
 class SignUpUser extends SignupEvent {
   final String email;
+  final String username;
   final String password;
   final String role;
   final String firstName;
@@ -16,9 +17,13 @@ class SignUpUser extends SignupEvent {
   final String address;
   final String phoneNo;
   final String dob;
+  final String? workshopname;
+  final String? catagory;
+  final String? panNo;
 
   const SignUpUser(
       {required this.email,
+      required this.username, 
       required this.password,
       required this.role,
       required this.firstName,
@@ -26,8 +31,12 @@ class SignUpUser extends SignupEvent {
       required this.confirmPassword,
       required this.address,
       required this.phoneNo,
-      required this.dob});
+      required this.dob ,this.workshopname, this.catagory, this.panNo, });
 
   @override
   List<Object> get props => [email, password];
 }
+
+class UserName extends SignupEvent {}
+
+class Email extends SignupEvent {}

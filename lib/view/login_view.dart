@@ -30,8 +30,8 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void initState() {
-    emailController.text = "nikhil1";
-    passwordController.text = "admin@123";
+    emailController.text = "nikhils";
+    passwordController.text = "nikhil@123";
     super.initState();
   }
 
@@ -229,14 +229,14 @@ class _LoginViewState extends State<LoginView> {
     BlocConsumer<BiomatricBloc, BiomatricState>(
       listener: (context, state) {
         print("this is state $state");
-        if (state is BiomatricSuccessState) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const DashboardView(),
-            ),
-          );
-        }
+        // if (state is BiomatricSuccessState) {
+        //   Navigator.pushReplacement(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => const DashboardView(),
+        //     ),
+        //   );
+        // }
       },
       builder: (context, state) {
         print("this is state $state");

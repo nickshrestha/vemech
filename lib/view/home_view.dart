@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/bloc/home/home_bloc.dart';
+import 'package:vemech/models/workshop_recommendation_model.dart';
 import 'package:vemech/widgets/prefrences_helper.dart';
 
 // HomePageView displays a carousel, categories, nearby workshops, and an action button.
@@ -117,7 +120,30 @@ class HomePageView extends StatelessWidget {
 
   // Helper method to build the Nearby Workshop section.
   Widget buildNearbyWorkshopSection(BuildContext context) {
-    return Column(
+    return 
+    BlocConsumer<HomeBloc, HomeState>(
+          listener: (context, state) {
+            // Handle any side effects or other actions here if needed.
+          },
+          builder: (context, state) {
+            if (state is HomeLoadingState && state.isLoading) {
+        return const CircularProgressIndicator(); // Show a loading indicator
+            } else
+        
+            if (state is HomeFailureState) {
+        return Center(
+          child: Text(
+            state.errorMessage,
+            style: const TextStyle(color: Colors.red),
+          ), // Show an error message if fetching profile fails
+        );
+            } else 
+        
+            if (state is HomeSuccessState ) {
+        // Successfully fetched the profile
+        List<WorkshopRecommendationModel> workshopRecommendation = state.homeList; // Get the profile data
+        
+        return     Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -129,7 +155,7 @@ class HomePageView extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: List.generate(
-              5,
+              workshopRecommendation.length,
               (index) => Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -139,17 +165,17 @@ class HomePageView extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.green, width: 2)),
-                  child: const Column(
+                  child:  Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Bhaktapur Workshop',
+                        workshopRecommendation[index].workshopName,
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w700),
                       ),
-                      Text("0.0 km away"),
-                      Text("Bhakatapur "),
+                      Text("Owner: ${workshopRecommendation[index].user.firstName} ${workshopRecommendation[index].user.lastName}",),
+                      Text("Category: ${workshopRecommendation[index].category}"),
                       Text("Book now."),
                     ],
                   ),
@@ -160,5 +186,13 @@ class HomePageView extends StatelessWidget {
         ),
       ],
     );
-  }
+ 
+            }
+        
+            return const Center(child: Text("No profile data available"));
+          },
+        );
+        
+    
+ }
 }

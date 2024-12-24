@@ -26,8 +26,8 @@ class NetworkHelper {
   // Function to initialize the token by fetching it from SharedPreferences
   Future<void> _initializeToken() async {
     _token = await tokenManager.getToken();
-    _header = await {
-      'Authentication': 'Token $_token', // Use the stored token here
+    _header = {
+      'Authorization': 'Token $_token',
     };
     print("this is token $_token");
     print("this is header $_header");
@@ -45,19 +45,20 @@ class NetworkHelper {
     }
   }
 
-  // Example: GET request
-  Future<String> getData() async {
-    try {
-      var response = await client.get(parseUrl("BaseUrl.login"));
-      return response.toString();
-    } catch (e) {
-      throw e;
-    }
-  }
+  // // Example: GET request
+  // Future<String> getData() async {
+  //   try {
+  //     var response = await client.get(parseUrl("BaseUrl.login"));
+  //     return response.toString();
+  //   } catch (e) {
+  //     throw e;
+  //   }
+  // }
 
   // POST login request with username and password
   Future<http.Response> postLogin(
       {required String username, required String password}) async {
+    await _initializeToken();
     try {
       http.Response response = await client.post(parseUrl(BaseUrl.login),
           body: {"username": username, "password": password});
@@ -73,6 +74,7 @@ class NetworkHelper {
 
   // POST logout request, using the token stored in the class
   Future<http.Response> postLogout() async {
+    await _initializeToken();
     try {
       http.Response response = await client.post(
         parseUrl(BaseUrl.logout),
@@ -94,6 +96,7 @@ class NetworkHelper {
       {required currentPassword,
       required newPassword,
       required confirmPassword}) async {
+    await _initializeToken();
     try {
       var bodyResponse = {
         "current_password": currentPassword,
@@ -128,22 +131,46 @@ class NetworkHelper {
     required String address,
     required String phoneNo,
     required String dob,
+    final String? workshopname,
+    final String? catagory,
+    final String? panNo,
   }) async {
+    await _initializeToken();
     try {
-      var body = {
-        "role": role,
-        "email": email,
-        "username": username,
-        "first_name": firstName,
-        "last_name": lastName,
-        "password": password,
-        "confirm_password": confirmPassword,
-        "address": address,
-        "phone_no": phoneNo,
-        "dob": dob,
-      };
-      http.Response response =
-          await client.post(parseUrl(BaseUrl.signup), body: body);
+      var body = (workshopname != null)
+          ? {
+              "role": role,
+              "email": email,
+              "username": username,
+              "first_name": firstName,
+              "last_name": lastName,
+              "password": password,
+              "confirm_password": confirmPassword,
+              "address": address,
+              "phone_no": phoneNo,
+              "workshop_details": {
+                "workshop_name": workshopname,
+                "pan_no": panNo,
+                "category": catagory
+              }
+            }
+          : {
+              "role": role,
+              "email": email,
+              "username": username,
+              "first_name": firstName,
+              "last_name": lastName,
+              "password": password,
+              "confirm_password": confirmPassword,
+              "address": address,
+              "phone_no": phoneNo,
+              "dob": dob,
+            };
+      print("thsi si signup body $body");
+      http.Response response = await client
+          .post(parseUrl(BaseUrl.signup), body: jsonEncode(body), headers: {
+        "Content-Type": "application/json",
+      });
       if (response.statusCode == 200) {
         return response;
       } else {
@@ -154,11 +181,58 @@ class NetworkHelper {
     }
   }
 
+  Future<http.Response> postRequestwithAuth({
+    required dynamic body,
+    required String url,
+  }) async {
+    await _initializeToken();
+    try {
+      // print("thsi si signup body $body");
+      http.Response response =
+          await client.post(parseUrl(url), body: jsonEncode(body), headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Token $_token',
+      });
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during signup: $e');
+    }
+  }
+  Future<http.Response> putRequestwithAuth({
+    required dynamic body,
+    required String url,
+  }) async {
+    await _initializeToken();
+    try {
+      print("thsi si signup body put $body");
+      http.Response response =
+          await client.put(parseUrl(url), body: jsonEncode(body), headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Token $_token',
+      });
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during signup: $e');
+    }
+  }
+
   Future<http.Response> getProfile() async {
+    await _initializeToken();
     try {
       http.Response response = await client.get(
         parseUrl(BaseUrl.userprofile),
         headers: _header,
+        // headers:  {
+        //   'Authorization': 'Bearer $_token',
+        // }
       );
 
       // Check the response status
@@ -168,7 +242,50 @@ class NetworkHelper {
         return response;
       }
     } catch (e) {
-      throw Exception('An error occurred during logout: $e');
+      throw Exception('An error occurred during get profile: $e');
+    }
+  }
+
+  Future<http.Response> getRequest({required String url}) async {
+    await _initializeToken();
+    try {
+      http.Response response = await client.get(
+        parseUrl(url),
+        headers: _header,
+        // headers:  {
+        //   'Authorization': 'Token $_token',
+        // }
+      );
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during get profile: $e');
+    }
+  }
+
+  Future<http.Response> getRequestwithoutauth({required String url}) async {
+    try {
+      http.Response response = await client.get(
+        parseUrl(url),
+        // headers: _header,
+        // headers:  {
+        //   'Authorization': 'Token $_token',
+        // }
+      );
+
+      // Check the response status
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('An error occurred during get profile: $e');
     }
   }
 

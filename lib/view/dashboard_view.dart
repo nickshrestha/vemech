@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/bloc/home/home_bloc.dart';
+import 'package:vemech/bloc/profile/profile_bloc.dart';
 import 'package:vemech/view/home_view.dart';
 import 'package:vemech/view/onsite_view.dart';
-import 'package:vemech/view/pofile_view.dart';
+import 'package:vemech/view/profile_view.dart';
 
 // Main dashboard view which holds different sections of the app
 class DashboardView extends StatefulWidget {
@@ -34,6 +37,13 @@ class _DashboardViewState extends State<DashboardView> {
     setState(() {
       _selectedIndex = index; // Update the index to show the selected page
     });
+  }
+  
+  @override
+  void initState() {
+    BlocProvider.of<HomeBloc>(context).add(UserHome());
+     BlocProvider.of<ProfileBloc>(context).add(UserProfile());
+    super.initState();
   }
 
   @override

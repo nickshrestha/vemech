@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vemech/bloc/biometric/biomatric_bloc.dart';
 import 'package:vemech/bloc/connection/connection_bloc.dart';
 import 'package:vemech/bloc/connection/connection_evert.dart';
+import 'package:vemech/bloc/edit_profile/edit_profile_bloc.dart';
+import 'package:vemech/bloc/home/home_bloc.dart';
 import 'package:vemech/bloc/login/login_bloc.dart';
 import 'package:vemech/bloc/profile/profile_bloc.dart';
 import 'package:vemech/bloc/signup/signup_bloc.dart';
@@ -36,10 +38,19 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthenticationBloc(),
         ),
         BlocProvider<SignupBloc>(
-          create: (context) => SignupBloc(),
+          create: (context) => SignupBloc()
+            ..add(
+              UserName(),
+            ),
         ),
         BlocProvider<ProfileBloc>(
           create: (context) => ProfileBloc(),
+        ),
+        BlocProvider<EditProfileBloc>(
+          create: (context) => EditProfileBloc(),
+        ),
+        BlocProvider<HomeBloc>(
+          create: (context) => HomeBloc(),
         ),
         BlocProvider<BiomatricBloc>(
             create: (context) => BiomatricBloc()
@@ -78,7 +89,8 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: token != null ? const DashboardView() : const LoginView(),
+        // home: const LoginView(),
+        home: token == null ? const DashboardView() : const LoginView(),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vemech/models/profile_model.dart';
+import 'package:vemech/network%20helper/base_url.dart';
 import 'package:vemech/network%20helper/network_helper.dart';
 
 part 'profile_event.dart';
@@ -27,13 +28,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             String errorMessage = '${jsonDecode(user.body)['detail']}';
             emit(ProfileFailureState(errorMessage));
           }
-          
         } catch (e) {
           // Handle any exceptions
+          print("this si error $e");
           emit(ProfileLoadingState(isLoading: false));
+
+
+
           emit(const ProfileFailureState('An unexpected error occurred.'));
         }
       },
     );
-  }
+
+ }
 }

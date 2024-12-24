@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/models/email_list_model.dart';
 import 'package:vemech/models/login_model.dart';
+import 'package:vemech/models/user_model.dart';
+import 'package:vemech/network%20helper/base_url.dart';
 import 'package:vemech/network%20helper/network_helper.dart';
 import 'package:vemech/widgets/validation.dart';
 
@@ -21,7 +24,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         try {
           // API call for login
           var user = await authService.postSignUp(
-            username: event.email,
+            username: event.username,
             password: event.password,
             role: event.role,
             email: event.email,
@@ -31,6 +34,9 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             address: event.address,
             phoneNo: event.phoneNo,
             dob: event.dob,
+            workshopname:  event.workshopname,
+            catagory:  event.catagory,
+            panNo:  event.panNo,
           );
 
           // Check if the response is successful
@@ -45,6 +51,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             emit(SignupFailureState(errorMessage));
           }
         } catch (e) {
+          print("error is is $e");
           // Handle any exceptions
           emit(SignupFailureState('An unexpected error occurred.'));
         }
@@ -59,5 +66,55 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
         ));
       }
     });
+
+     on<UserName>(
+      (event, emit) async {
+        emit(UserLoadingState(isLoading: true));
+        try {
+          var response = await authService.getRequestwithoutauth(url: BaseUrl.username);
+
+          if (response.statusCode == 200) {
+            var jsondata = jsonDecode(response.body);
+            // var models =UserNameModel.fromJson(response.body);
+             UserNameModel models = UserNameModel.fromJson(jsondata);
+
+            emit(UserLoadingState(isLoading: false));
+            emit(UserSuccessState(models));
+          } else {
+            emit(UserLoadingState(isLoading: false));
+            String errorMessage = jsonDecode(response.body)['detail'];
+            emit(UserNameFailureState(errorMessage));
+          }
+        } catch (e) {
+          print("erron in adding Emali and user $e");
+          emit(UserLoadingState(isLoading: false));
+          emit( UserNameFailureState('An unexpected error occurred. $e'));
+        }
+      },
+    );
+     on<Email>(
+      (event, emit) async {
+        emit(UserLoadingState(isLoading: true));
+        try {
+          var response = await authService.getRequestwithoutauth(url: BaseUrl.email);
+
+          if (response.statusCode == 200) {
+            var jsondata = jsonDecode(response.body);
+            // var models =UserNameModel.fromJson(response.body);
+             EmailModel models = EmailModel.fromJson(jsondata);
+
+            emit(UserLoadingState(isLoading: false));
+            emit(EmailSuccessState(models));
+          } else {
+            emit(UserLoadingState(isLoading: false));
+            String errorMessage = jsonDecode(response.body)['detail'];
+            emit(UserNameFailureState(errorMessage));
+          }
+        } catch (e) {
+          emit(UserLoadingState(isLoading: false));
+          emit( UserNameFailureState('An unexpected error occurred. $e'));
+        }
+      },
+    );
   }
 }

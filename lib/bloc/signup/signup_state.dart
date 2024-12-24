@@ -44,3 +44,39 @@ class SignupValidationFailureState extends SignupState {
   @override
   List<Object> get props => [emailError ?? '', passwordError ?? ''];
 }
+
+// User state
+class UserLoadingState extends SignupState {
+  final bool isLoading;
+  UserLoadingState({required this.isLoading});
+
+  @override
+  List<Object> get props => [isLoading];
+}
+
+class UserSuccessState extends SignupState {
+  final UserNameModel userList;
+
+  const UserSuccessState(this.userList);
+
+  @override
+  List<Object> get props => [userList];
+}
+class EmailSuccessState extends SignupState {
+  final EmailModel emailList;
+
+  const EmailSuccessState(this.emailList);
+
+  @override
+  List<Object> get props => [emailList];
+}
+
+
+class UserNameFailureState extends SignupState {
+  final String errorMessage;
+
+  const UserNameFailureState(this.errorMessage);
+
+  @override
+  List<Object> get props => [errorMessage];
+}

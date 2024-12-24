@@ -52,10 +52,10 @@ class ProfileData {
   factory ProfileData.fromMap(Map<String, dynamic> json) => ProfileData(
     id: json["id"],
     user: User.fromMap(json["user"]),
-    role: json["role"],
-    phoneNo: json["phone_no"],
-    address: json["address"],
-    isActive: json["is_active"],
+    role: json["role"] ?? "Workshop",
+    phoneNo: json["phone_no"] ?? 000000,
+    address: json["address"]?? "",
+    isActive: json["is_active"] ?? false,
     workshopName: json["workshop_name"],  // Nullable
     category: json["category"],           // Nullable
     panNo: json["pan_no"],                // Nullable

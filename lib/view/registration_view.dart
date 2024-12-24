@@ -12,243 +12,255 @@ class RegistrationForm extends StatefulWidget {
 
 class _RegistrationFormState extends State<RegistrationForm> {
   final _formKey = GlobalKey<FormState>();
-
-  // Controllers for each field
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneNumberController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController dobController = TextEditingController();
-
-  String? selectedRole; // Role selection
-  List<String> roles = ['Vehicle_Owner', 'Workshop']; // Example roles
+  final List<TextEditingController> _controllers =
+      List.generate(11, (index) => TextEditingController());
+  final List<String> _roles = ['Vehicle_Owner', 'Workshop'];
+  String? _selectedRole;
+  String? _selectedVehicleType; // Variable to hold the selected vehicle type
+  final List<String> _vehicleTypes = ['Bikes', 'Cars']; // Vehicle types
 
   @override
   void dispose() {
-    // Dispose controllers when the widget is destroyed
-    firstNameController.dispose();
-    lastNameController.dispose();
-    usernameController.dispose();
-    emailController.dispose();
-    phoneNumberController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    addressController.dispose();
-    dobController.dispose();
+    _controllers.forEach((controller) => controller.dispose());
     super.dispose();
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+    required String? Function(String?)? validator,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: labelText),
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: validator,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registration'),
-      ),
+      appBar: AppBar(title: const Text('Registration')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
-              // First and Last Name fields in a Row
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      controller: firstNameController,
-                      decoration:
-                          const InputDecoration(labelText: 'First Name'),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your first name';
-                        }
-                        return null;
-                      },
+                    child: _buildTextFormField(
+                      controller: _controllers[0], // firstNameController
+                      labelText: 'First Name',
+                      validator: (value) => value?.isEmpty ?? true
+                          ? 'Please enter your first name'
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: TextFormField(
-                      controller: lastNameController,
-                      decoration: const InputDecoration(labelText: 'Last Name'),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your last name';
-                        }
-                        return null;
-                      },
+                    child: _buildTextFormField(
+                      controller: _controllers[1], // lastNameController
+                      labelText: 'Last Name',
+                      validator: (value) => value?.isEmpty ?? true
+                          ? 'Please enter your phone number'
+                          : null,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Username field
-              TextFormField(
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
-                  }
-                  return null;
+              BlocConsumer<SignupBloc, SignupState>(
+                listener: (context, state) {
+                  // Handle side effects or other actions here if needed.
                 },
-              ),
-              const SizedBox(height: 16),
-
-              // Dropdown for role selection
-              DropdownButtonFormField<String>(
-                value: selectedRole,
-                hint: const Text('Select Role'),
-                onChanged: (newValue) {
-                  setState(() {
-                    selectedRole = newValue;
-                  });
-                },
-                items: roles.map((role) {
-                  return DropdownMenuItem(
-                    child: Text(role),
-                    value: role,
+                builder: (context, state) {
+                  return _buildTextFormField(
+                    controller: _controllers[2], // usernameController
+                    labelText: 'Username',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a username';
+                      } else if (state is UserSuccessState &&
+                          state.userList.usernames.contains(value)) {
+                        return 'Username already taken, please choose another one';
+                      }
+                      return null; // No error condition met, input is valid.
+                    },
                   );
-                }).toList(),
+
+                  // TextFormField(
+                  //   controller: usernameController,
+                  //   decoration: const InputDecoration(labelText: 'Username'),
+                  //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                  //   validator: (value) {
+                  //     if (value == null || value.isEmpty) {
+                  //       return 'Please enter a username';
+                  //     } else if (state is UserSuccessState && state.userList.usernames.contains(value)) {
+                  //       return 'Username already taken, please choose another one';
+                  //     }
+                  //     return null; // No error condition met, input is valid.
+                  //   },
+                  // );
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedRole,
+                onChanged: (newValue) =>
+                    setState(() => _selectedRole = newValue),
+                items: _roles
+                    .map((role) =>
+                        DropdownMenuItem(value: role, child: Text(role)))
+                    .toList(),
                 decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                ),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a role';
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                validator: (value) =>
+                    value == null ? 'Please select a role' : null,
+              ),
+              const SizedBox(height: 16),
+              BlocConsumer<SignupBloc, SignupState>(
+                listener: (context, state) {
+                  if (state is EmailSuccessState) {
+                    print("this is email: ${state.emailList.emails}");
                   }
-                  return null;
+                },
+                builder: (context, state) {
+                  return _buildTextFormField(
+                    controller: _controllers[3], // emailController
+                    labelText: 'Email',
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                          .hasMatch(value)) {
+                        // Here you might want to use more robust email validation
+                        return 'Please enter a valid email';
+                      }
+
+                      // Optional: Handle additional validation based on bloc state
+                      else if (state is EmailSuccessState &&
+                          state.emailList.emails.contains(value)) {
+                        return 'This email is already in use, please choose another one';
+                      }
+
+                      return null;
+                    },
+                  );
                 },
               ),
               const SizedBox(height: 16),
-
-              // Email field
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Phone number field
               Row(
                 children: [
                   SizedBox(
                     width: 100,
                     child: TextFormField(
-                      controller: TextEditingController(text: '+977'),
+                      controller:
+                          TextEditingController(text: '+977'), // Country code
                       readOnly: true,
                       decoration: const InputDecoration(
-                        labelText: 'Country Code',
-                        border: OutlineInputBorder(),
-                      ),
+                          labelText: 'Country Code',
+                          border: OutlineInputBorder()),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: TextFormField(
-                      controller: phoneNumberController,
-                      decoration:
-                          const InputDecoration(labelText: 'Phone Number'),
+                    child: _buildTextFormField(
+                      controller: _controllers[4], // phoneNumberController
+                      labelText: 'Phone Number',
                       keyboardType: TextInputType.phone,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value?.isEmpty ?? true
+                          ? 'Please enter your phone number'
+                          : null,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Password field
-              TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
+              _buildTextFormField(
+                controller: _controllers[5], // passwordController
+                labelText: 'Password',
                 obscureText: true,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
+                validator: (value) => value?.isEmpty ?? true
+                    ? 'Please enter your password'
+                    : null,
               ),
               const SizedBox(height: 16),
-
-              // Confirm password field
-              TextFormField(
-                controller: confirmPasswordController,
-                decoration:
-                    const InputDecoration(labelText: 'Confirm Password'),
+              _buildTextFormField(
+                controller: _controllers[6], // confirmPasswordController
+                labelText: 'Confirm Password',
                 obscureText: true,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-                  if (value != passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+                validator: (value) => value != _controllers[5].text
+                    ? 'Passwords do not match'
+                    : null,
               ),
               const SizedBox(height: 16),
-
-              // Address field
-              TextFormField(
-                controller: addressController,
-                decoration: const InputDecoration(labelText: 'Address'),
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your address';
-                  }
-                  return null;
-                },
+              _buildTextFormField(
+                controller: _controllers[7], // addressController
+                labelText: 'Address',
+                validator: (value) =>
+                    value!.isEmpty ?? true ? 'Please enter your address' : null,
               ),
               const SizedBox(height: 16),
-
-              // Date of birth field
-              TextFormField(
-                controller: dobController,
-                decoration: const InputDecoration(labelText: 'Date of Birth'),
-                keyboardType: TextInputType.datetime,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+              _buildTextFormField(
+                controller: _controllers[8], // dobController
+                labelText: 'Date of Birth (YYYY-MM-DD)',
+                keyboardType: TextInputType.numberWithOptions(signed: true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your date of birth';
+                  } else if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value)) {
+                    return 'Date has wrong format. Use YYYY-MM-DD';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-
-              // Terms and conditions checkbox
+              if (_selectedRole == "Workshop")
+                Column(
+                  children: [
+                    _buildTextFormField(
+                      controller: _controllers[9], // workshopNameController
+                      labelText: 'Workshop Name',
+                      validator: (value) => value?.isEmpty ?? true
+                          ? 'Please enter your workshop name'
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedVehicleType,
+                      onChanged: (newValue) =>
+                          setState(() => _selectedVehicleType = newValue),
+                      items: _vehicleTypes
+                          .map((type) =>
+                              DropdownMenuItem(value: type, child: Text(type)))
+                          .toList(),
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                      validator: (value) =>
+                          value == null ? 'Please select a vehicle type' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextFormField(
+                      keyboardType: TextInputType.datetime,
+                      controller: _controllers[10], // panNumberController
+                      labelText: 'PAN Number',
+                      validator: (value) => value?.isEmpty ?? true
+                          ? 'Please enter your PAN number'
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               Row(
                 children: [
                   Checkbox(value: true, onChanged: (value) {}),
@@ -257,107 +269,26 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Register button
-
               BlocConsumer<SignupBloc, SignupState>(
-                listener: (context, state) {
-                  if (state is SignupSuccessState) {
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => DashboardView(),
-                    //   ),
-                    // );
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: Text(state.message),
-                          actions: [
-                            IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(Icons.done))
-                          ],
-                        );
-                      },
-                    );
-                  } else if (state is SignupFailureState) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.errorMessage),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  } else if (state is SignupValidationFailureState) {
-                    // Show validation error messages from Bloc
-                    if (state.emailError != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.emailError!),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                    if (state.passwordError != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.passwordError!),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-                builder: (context, state) {
-                  return SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // Only trigger the Signup if the form is valid
-                          BlocProvider.of<SignupBloc>(context).add(
-                            SignUpUser(
-                              email: emailController.text,
-                              password: passwordController.text,
-                              role:
-                                  'Vehicle_Owner', // Ensure this is set correctly
-                              firstName: firstNameController.text,
-                              lastName: lastNameController.text,
-                              confirmPassword: confirmPasswordController.text,
-                              address: addressController.text,
-                              phoneNo: phoneNumberController.text,
-                              dob: '1111-11-11',
-                            ),
-                          );
-                        } else {
-                        }
-                      },
-                      child: Text(
-                        state is SignupLoadingState && state.isLoading
-                            ? '.......'
-                            : 'Sign Up',
-                        style: const TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  );
-                },
+                listener: (context, state) =>
+                    _handleStateChanges(context, state),
+                builder: (context, state) => ElevatedButton(
+                  onPressed: _handleFormSubmission,
+                  child: Text(
+                      state is SignupLoadingState && state.isLoading
+                          ? 'Loading...'
+                          : 'Sign Up',
+                      style: const TextStyle(fontSize: 20)),
+                ),
               ),
               const SizedBox(height: 16),
-              // Navigation to Login screen
               Center(
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
+                  onPressed: () => Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const LoginView()),
-                      (route) => false, // This removes all previous routes
-                    );
-                    // Handle navigation to login
-                  },
+                      MaterialPageRoute(
+                          builder: (context) => const LoginView()),
+                      ModalRoute.withName('/')),
                   child: const Text('Already have an account? Login'),
                 ),
               ),
@@ -366,5 +297,60 @@ class _RegistrationFormState extends State<RegistrationForm> {
         ),
       ),
     );
+  }
+
+  void _handleStateChanges(BuildContext context, SignupState state) {
+    if (state is SignupSuccessState) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text(state.message),
+          actions: [
+            IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.done))
+          ],
+        ),
+      );
+    } else if (state is SignupFailureState) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(state.errorMessage), backgroundColor: Colors.red));
+    }
+  }
+
+  void _handleFormSubmission() {
+    if (_formKey.currentState!.validate()) {
+      print(
+          "this is sign up value ${(_selectedRole == "Workshop") ? true : false}");
+      BlocProvider.of<SignupBloc>(context).add(
+        (_selectedRole == "Workshop")
+            ? SignUpUser(
+                email: _controllers[3].text,
+                password: _controllers[5].text,
+                firstName: _controllers[0].text,
+                lastName: _controllers[1].text,
+                phoneNo: _controllers[4].text,
+                address: _controllers[7].text,
+                dob: _controllers[8].text,
+                role: _selectedRole!,
+                confirmPassword: _controllers[6].text,
+                workshopname: _controllers[9].text,
+                catagory: _selectedVehicleType,
+                panNo: _controllers[10].text, username: _controllers[2].text,
+              )
+            : SignUpUser(
+                email: _controllers[3].text,
+                password: _controllers[5].text,
+                firstName: _controllers[0].text,
+                lastName: _controllers[1].text,
+                phoneNo: _controllers[4].text,
+                address: _controllers[7].text,
+                dob: _controllers[8].text,
+                role: _selectedRole!,
+                confirmPassword: _controllers[6].text,
+                username: _controllers[2].text,
+              ),
+      );
+    }
   }
 }
