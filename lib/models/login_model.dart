@@ -124,8 +124,8 @@ class User {
   factory User.fromMap(Map<String, dynamic> json) => User(
     email: json["email"] ?? '',
     username: json["username"] ?? '',
-    firstName: json["first_name"],
-    lastName: json["last_name"],
+    firstName: json["first_name"]?? '',
+    lastName: json["last_name"]?? '',
   );
 
   Map<String, dynamic> toMap() => {

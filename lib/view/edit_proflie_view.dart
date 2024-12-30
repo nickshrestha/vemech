@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vemech/bloc/edit_profile/edit_profile_bloc.dart';
 import 'package:vemech/bloc/profile/profile_bloc.dart';
-
 
 class EditProfleForm extends StatefulWidget {
   const EditProfleForm({super.key});
@@ -43,7 +41,9 @@ class _EditProfleFormState extends State<EditProfleForm> {
 
   @override
   void dispose() {
-    _controllers.forEach((controller) => controller.dispose());
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -92,15 +92,15 @@ class _EditProfleFormState extends State<EditProfleForm> {
                 _buildTextFormField(
                   controller: _controllers[1], // addressController
                   labelText: 'Address',
-                  validator: (value) => value!.isEmpty ?? true
-                      ? 'Please enter your address'
-                      : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'Please enter your address' : null,
                 ),
                 const SizedBox(height: 16),
                 _buildTextFormField(
                   controller: _controllers[2], // dobController
                   labelText: 'Date of Birth (YYYY-MM-DD)',
-                  keyboardType: TextInputType.numberWithOptions(signed: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(signed: true),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your date of birth';
@@ -194,19 +194,15 @@ class _EditProfleFormState extends State<EditProfleForm> {
 
   void _handleFormSubmission() {
     if (_formKey.currentState!.validate()) {
-      print("safjbflasnfln this hello");
-      // print(
-      //     "this is sign up value ${(_selectedRole == "Workshop") ? true : false}");
       BlocProvider.of<EditProfileBloc>(context).add(
         (_role == "Workshop")
             ? EditUserProfile(
-              role: "Workshop",
+                role: "Workshop",
                 workshopname: _controllers[3].text,
                 catagory: _selectedVehicleType,
                 // panNo: _controllers[4].text,
               )
             : EditUserProfile(
-             
                 phoneNo: _controllers[0].text,
                 address: _controllers[1].text,
                 dob: _controllers[2].text,

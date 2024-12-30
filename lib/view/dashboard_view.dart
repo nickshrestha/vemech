@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vemech/bloc/home/home_bloc.dart';
 import 'package:vemech/bloc/profile/profile_bloc.dart';
+import 'package:vemech/view/appointment_view.dart';
 import 'package:vemech/view/home_view.dart';
 import 'package:vemech/view/onsite_view.dart';
 import 'package:vemech/view/profile_view.dart';
@@ -24,10 +25,7 @@ class _DashboardViewState extends State<DashboardView> {
     Center(
         child: Text('Workshop',
             style: TextStyle(fontSize: 24))), // Placeholder for Workshop view
-    Center(
-        child: Text('Appointment',
-            style:
-                TextStyle(fontSize: 24))), // Placeholder for Appointment view
+    Appointment(), // Placeholder for Appointment view
     OnSite(),
     ProfileView(), // Actual ProfileView widget, not just a placeholder
   ];
@@ -94,3 +92,5 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 }
+
+

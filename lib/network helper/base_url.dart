@@ -22,6 +22,9 @@ class BaseUrl {
   static final String username = getFullUrl("/accounts/check/username/");
   static final String email = getFullUrl("/accounts/check/email/");
 
+  //Appointment 
+  static final String appointmentAvailability = getFullUrl("/appointment/availability/");
+
 
 
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vemech/bloc/appointment/appointment_bloc.dart';
 import 'package:vemech/bloc/biometric/biomatric_bloc.dart';
 import 'package:vemech/bloc/connection/connection_bloc.dart';
 import 'package:vemech/bloc/connection/connection_evert.dart';
@@ -48,6 +49,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<EditProfileBloc>(
           create: (context) => EditProfileBloc(),
+        ),
+        BlocProvider<AppointmentBloc>(
+          create: (context) => AppointmentBloc(),
         ),
         BlocProvider<HomeBloc>(
           create: (context) => HomeBloc(),

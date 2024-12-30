@@ -1,4 +1,13 @@
+// To parse this JSON data, do
+//
+//     final listWorkshopsTimeSchedule = listWorkshopsTimeScheduleFromJson(jsonString);
+
+import 'package:meta/meta.dart';
 import 'dart:convert';
+
+List<ListWorkshopsTimeSchedule> listWorkshopsTimeScheduleFromJson(String str) => List<ListWorkshopsTimeSchedule>.from(json.decode(str).map((x) => ListWorkshopsTimeSchedule.fromJson(x)));
+
+String listWorkshopsTimeScheduleToJson(List<ListWorkshopsTimeSchedule> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class ListWorkshopsTimeSchedule {
     int id;
@@ -18,10 +27,6 @@ class ListWorkshopsTimeSchedule {
         required this.schedules,
         required this.geoCoordinates,
     });
-
-    factory ListWorkshopsTimeSchedule.fromRawJson(String str) => ListWorkshopsTimeSchedule.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
 
     factory ListWorkshopsTimeSchedule.fromJson(Map<String, dynamic> json) => ListWorkshopsTimeSchedule(
         id: json["id"],
@@ -59,10 +64,6 @@ class Schedule {
         required this.slots,
     });
 
-    factory Schedule.fromRawJson(String str) => Schedule.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
-
     factory Schedule.fromJson(Map<String, dynamic> json) => Schedule(
         id: json["id"],
         date: DateTime.parse(json["date"]),
@@ -92,10 +93,6 @@ class User {
         required this.firstName,
         required this.lastName,
     });
-
-    factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
-
-    String toRawJson() => json.encode(toJson());
 
     factory User.fromJson(Map<String, dynamic> json) => User(
         email: json["email"],
